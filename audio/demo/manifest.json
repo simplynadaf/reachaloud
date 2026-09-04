@@ -1,0 +1,56 @@
+{
+  "scenario": "Flood evacuation alert",
+  "voice": "Sarah (reassuring)",
+  "model": "eleven_multilingual_v2",
+  "note": "Pre-generated static clips. The live demo plays these with no API calls.",
+  "clips": [
+    {
+      "code": "en",
+      "language": "English",
+      "native": "English",
+      "text": "Flood warning. Water is rising fast in your area. Move to higher ground now. Take your family with you and leave heavy belongings behind.",
+      "file": "audio/demo/alert_en.mp3",
+      "chars": 137
+    },
+    {
+      "code": "es",
+      "language": "Spanish",
+      "native": "Espanol",
+      "text": "Alerta de inundacion. El agua sube rapidamente en su zona. Vaya a un lugar alto ahora. Lleve a su familia y deje atras los objetos pesados.",
+      "file": "audio/demo/alert_es.mp3",
+      "chars": 139
+    },
+    {
+      "code": "hi",
+      "language": "Hindi",
+      "native": "हिन्दी",
+      "text": "बाढ़ की चेतावनी। आपके क्षेत्र में पानी तेज़ी से बढ़ रहा है। अभी ऊँची जगह पर चले जाएँ। अपने परिवार को साथ लें और भारी सामान छोड़ दें।",
+      "file": "audio/demo/alert_hi.mp3",
+      "chars": 132
+    },
+    {
+      "code": "ar",
+      "language": "Arabic",
+      "native": "العربية",
+      "text": "تحذير من الفيضان. المياه ترتفع بسرعة في منطقتك. اتجه إلى مكان مرتفع الآن. خذ عائلتك معك واترك الأمتعة الثقيلة.",
+      "file": "audio/demo/alert_ar.mp3",
+      "chars": 110
+    },
+    {
+      "code": "fr",
+      "language": "French",
+      "native": "Francais",
+      "text": "Alerte inondation. L'eau monte rapidement dans votre region. Rejoignez un point eleve maintenant. Emmenez votre famille et laissez les objets lourds.",
+      "file": "audio/demo/alert_fr.mp3",
+      "chars": 149
+    },
+    {
+      "code": "zh",
+      "language": "Chinese",
+      "native": "中文",
+      "text": "洪水警报。您所在地区的水位正在迅速上涨。请立即前往高处。带上家人，留下沉重的物品。",
+      "file": "audio/demo/alert_zh.mp3",
+      "chars": 41
+    }
+  ]
+}

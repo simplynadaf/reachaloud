@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReachAloud - Emergency alerts, spoken in every language</title>
+  <meta name="description" content="A multilingual text-to-speech accessibility tool that turns emergency alerts into natural voice in any language, for people who can't read the screen. Built with ElevenLabs." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="ReachAloud - Emergency alerts, spoken in every language" />
+  <meta property="og:description" content="Turn a written emergency alert into natural spoken voice in any language, for people who can't read the screen. Built with ElevenLabs." />
+  <meta property="og:url" content="https://simplynadaf.github.io/reachaloud/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ReachAloud - Emergency alerts, spoken in every language" />
+  <meta name="twitter:description" content="Turn a written emergency alert into natural spoken voice in any language, for people who can't read the screen. Built with ElevenLabs." />
+  <meta name="theme-color" content="#0a0b0f" />
+
+  <!-- Favicon: coral speaker on dark, matches the nav logo -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a0b0f'/%3E%3Ctext x='50' y='68' font-size='54' text-anchor='middle'%3E%F0%9F%94%8A%3C/text%3E%3C/svg%3E" />
+
+  <script src="config.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=cabinet-grotesk@400,500,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0b0f;
+      --accent: #ff7a45;      /* warm coral - "alert = help" */
+      --accent-2: #ffb545;    /* amber */
+      --ink: #f4f1ea;
+      --muted: rgba(244,241,234,0.60);
+      --line: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Cabinet Grotesk', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    .display { font-family: 'Clash Display', sans-serif; letter-spacing: -0.02em; word-spacing: 0.12em; }
+
+    /* Ambient beacon glow - the "signal in the dark" */
+    .beacon {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(60% 50% at 15% 85%, rgba(255,122,69,0.22), transparent 70%),
+        radial-gradient(45% 40% at 85% 20%, rgba(255,181,69,0.10), transparent 70%);
+      filter: saturate(115%);
+    }
+    /* Concentric signal ripples, very faint */
+    .ripples { position: fixed; left: 15%; top: 85%; z-index: 0; pointer-events: none; opacity: 0.5; }
+    .ripple {
+      position: absolute; border: 1px solid rgba(255,122,69,0.25); border-radius: 50%;
+      transform: translate(-50%, -50%); animation: ripple 6s ease-out infinite;
+    }
+    @keyframes ripple {
+      0% { width: 0; height: 0; opacity: 0.6; }
+      100% { width: 1200px; height: 1200px; opacity: 0; }
+    }
+    /* Film grain */
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .glass {
+      background: rgba(255,255,255,0.035);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #1a0d05; font-weight: 700;
+      transition: transform .4s cubic-bezier(0.32,0.72,0,1), box-shadow .4s;
+      box-shadow: 0 8px 30px rgba(255,122,69,0.35);
+    }
+    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(255,122,69,0.5); }
+    .btn-accent:active { transform: scale(0.98); }
+    textarea { field-sizing: content; }
+    .wave-bar {
+      width: 3px; height: 56px; border-radius: 3px;
+      transform: scaleY(0.07); transform-origin: bottom;
+      background: linear-gradient(to top, var(--accent), var(--accent-2));
+      transition: transform .12s ease;
+    }
+    .lang-card { transition: transform .4s cubic-bezier(0.32,0.72,0,1), border-color .3s; }
+    .lang-card:hover { transform: translateY(-3px); border-color: rgba(255,122,69,0.4); }
+    .lang-card.playing { border-color: rgba(255,122,69,0.7); box-shadow: 0 0 0 1px rgba(255,122,69,0.4), 0 16px 50px rgba(255,122,69,0.18); }
+    ::selection { background: rgba(255,122,69,0.3); }
+
+    /* Visible, on-brand keyboard focus (themed from the coral palette). */
+    a:focus-visible, button:focus-visible, textarea:focus-visible, select:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 8px;
+    }
+
+    /* Respect users who ask for less motion: stop the looping ripples and the
+       waveform's implicit transition, keep everything readable and in place. */
+    @media (prefers-reduced-motion: reduce) {
+      .ripple { animation: none; }
+      .wave-bar { transition: none; }
+      * { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body class="min-h-[100dvh]">
+  <div class="beacon"></div>
+  <div class="ripples">
+    <div class="ripple" style="animation-delay:0s"></div>
+    <div class="ripple" style="animation-delay:2s"></div>
+    <div class="ripple" style="animation-delay:4s"></div>
+  </div>
+
+  <div class="relative z-10 max-w-5xl mx-auto px-5 md:px-8">
+
+    <!-- Nav -->
+    <nav class="flex items-center justify-between py-6">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl btn-accent flex items-center justify-center text-lg" role="img" aria-label="ReachAloud logo">🔊</div>
+        <span class="display text-xl font-semibold">ReachAloud</span>
+      </div>
+      <a href="https://github.com/simplynadaf/reachaloud" target="_blank" rel="noopener"
+         aria-label="View the ReachAloud source code on GitHub"
+         class="text-sm text-[var(--muted)] hover:text-[var(--ink)] transition-colors flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.6 18 4.9 18 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+        Code
+      </a>
+    </nav>
+
+    <!-- Hero -->
+    <header class="pt-10 md:pt-16 pb-8">
+      <div class="inline-flex items-center gap-2 text-xs font-medium text-[var(--muted)] glass rounded-full px-3.5 py-1.5 mb-6">
+        <span class="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse"></span>
+        International Day of Charity · Generosity Edition
+      </div>
+      <h1 class="hero-line display text-5xl md:text-7xl font-bold leading-[1.02] max-w-3xl" style="text-wrap:balance">
+        The alert that could save them is in a language they can't read.
+      </h1>
+      <p class="hero-sub mt-6 text-lg md:text-xl text-[var(--muted)] max-w-2xl leading-relaxed">
+        ReachAloud turns a written emergency alert into clear, natural <span class="text-[var(--ink)]">spoken voice</span> in any language - for the people that text leaves behind: low-literacy, low-vision, and non-native readers.
+      </p>
+    </header>
+
+    <!-- Composer -->
+    <section class="composer glass rounded-[2rem] p-2 mb-6">
+      <div class="rounded-[calc(2rem-0.5rem)] bg-[rgba(10,11,15,0.6)] p-5 md:p-7">
+        <label for="alertText" class="text-xs uppercase tracking-widest text-[var(--muted)] font-semibold">The alert</label>
+        <textarea id="alertText" rows="3"
+          class="w-full mt-3 bg-transparent text-xl md:text-2xl leading-relaxed outline-none resize-none placeholder:text-[rgba(244,241,234,0.25)]"
+          placeholder="Type an emergency alert… e.g. Flood warning. Move to higher ground now.">Flood warning. Water is rising fast in your area. Move to higher ground now. Take your family with you and leave heavy belongings behind.</textarea>
+
+        <div class="flex flex-wrap items-center justify-between gap-4 mt-5 pt-5 border-t border-[var(--line)]">
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-[var(--muted)]">Voice</span>
+            <select id="voiceSelect" aria-label="Choose a voice" class="glass rounded-lg px-3 py-2 text-sm bg-transparent outline-none cursor-pointer">
+              <option value="EXAVITQu4vr4xnSDxMaL" style="background:#14151a">Sarah - reassuring</option>
+              <option value="onwK4e9ZLuTAKqWW03F9" style="background:#14151a">Daniel - steady broadcaster</option>
+              <option value="nPczCjzI2devNBz1zQrb" style="background:#14151a">Brian - deep, comforting</option>
+            </select>
+          </div>
+          <button id="speakBtn" class="btn-accent rounded-full px-7 py-3 flex items-center gap-3">
+            <span>Speak this alert</span>
+            <span class="w-7 h-7 rounded-full bg-black/15 flex items-center justify-center" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <!-- Live waveform -->
+        <div id="waveform" class="flex items-end justify-center gap-[3px] h-16 mt-6 opacity-40" aria-hidden="true"></div>
+        <div id="status" class="text-center text-sm text-[var(--muted)] mt-2 h-5" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- Demo languages -->
+    <section class="pb-24">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="display text-2xl font-semibold">Heard in every language</h2>
+        <span class="text-xs text-[var(--muted)] glass rounded-full px-3 py-1.5">Pre-generated · plays instantly</span>
+      </div>
+      <div id="langGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <footer class="border-t border-[var(--line)] py-8 text-sm text-[var(--muted)] flex flex-wrap gap-2 justify-between">
+      <span>Built for the DEV Weekend Challenge · Generosity Edition</span>
+      <span>Voice by <span class="text-[var(--ink)]">ElevenLabs</span> · multilingual v2</span>
+    </footer>
+  </div>
+
+  <audio id="player"></audio>
+
+  <script>
+    // ---------- Live waveform ----------
+    const waveform = document.getElementById("waveform");
+    const BARS = 48;
+    for (let i = 0; i < BARS; i++) {
+      const b = document.createElement("div");
+      b.className = "wave-bar";
+      b.style.transform = "scaleY(0.07)";
+      waveform.appendChild(b);
+    }
+    const bars = [...waveform.children];
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const BAR_MAX = 56; // must match .wave-bar height in CSS
+    let waveTimer = null;
+    function animateWave(active) {
+      // Users who prefer reduced motion: show a calm static level, no ticking.
+      if (reduceMotion) {
+        waveform.style.opacity = active ? "1" : "0.4";
+        bars.forEach((b) => (b.style.transform = active ? "scaleY(0.4)" : "scaleY(0.07)"));
+        return;
+      }
+      if (active) {
+        waveform.style.opacity = "1";
+        clearInterval(waveTimer);
+        waveTimer = setInterval(() => {
+          bars.forEach((b, i) => {
+            const base = Math.sin((Date.now() / 200) + i * 0.5);
+            const h = 6 + Math.abs(base) * 44 + Math.random() * 10;
+            b.style.transform = "scaleY(" + Math.min(h / BAR_MAX, 1) + ")";
+          });
+        }, 90);
+      } else {
+        clearInterval(waveTimer);
+        waveform.style.opacity = "0.4";
+        bars.forEach((b) => (b.style.transform = "scaleY(0.07)"));
+      }
+    }
+
+    // ---------- Audio player ----------
+    const player = document.getElementById("player");
+    const statusEl = document.getElementById("status");
+    let currentCard = null;
+
+    function playUrl(url, card) {
+      if (currentCard) currentCard.classList.remove("playing");
+      currentCard = card || null;
+      if (card) card.classList.add("playing");
+      player.src = url;
+      player.play();
+      animateWave(true);
+    }
+    player.addEventListener("ended", () => {
+      animateWave(false);
+      if (currentCard) currentCard.classList.remove("playing");
+    });
+
+    // ---------- Live "speak this alert" ----------
+    // Reads window.REACHALOUD_CONFIG.API_BASE (from config.js).
+    //   - API_BASE set   -> live TTS via `${API_BASE}/api/speak`.
+    //   - API_BASE empty -> graceful preview: play the matching pre-generated
+    //     demo clip (no API call), so the button always does something useful
+    //     on a pure static host like GitHub Pages.
+    const speakBtn = document.getElementById("speakBtn");
+    const API_BASE = (window.REACHALOUD_CONFIG && window.REACHALOUD_CONFIG.API_BASE) || "";
+
+    // If there's no backend, reframe the button so the promise is honest.
+    if (!API_BASE) {
+      speakBtn.querySelector("span").textContent = "Preview a spoken alert";
+    }
+
+    // Pick the demo clip that best matches the typed text; default to English.
+    function pickPreviewClip() {
+      if (!window.__demoClips || !window.__demoClips.length) return null;
+      const t = document.getElementById("alertText").value.toLowerCase();
+      const match = window.__demoClips.find(c => t && c.text && t.trim() === c.text.toLowerCase().trim());
+      return match || window.__demoClips[0];
+    }
+
+    speakBtn.addEventListener("click", async () => {
+      const text = document.getElementById("alertText").value.trim();
+      const voiceId = document.getElementById("voiceSelect").value;
+      if (!text) { statusEl.textContent = "Please type an alert first."; return; }
+
+      // No backend configured: play a pre-generated demo clip instead of failing.
+      if (!API_BASE) {
+        const clip = pickPreviewClip();
+        if (!clip) {
+          statusEl.textContent = "Pick one of the demo alerts below to hear it.";
+          return;
+        }
+        playUrl(clip.file, null);
+        statusEl.textContent = "Preview mode - playing a pre-generated alert. Configure a backend to speak any text live.";
+        return;
+      }
+
+      statusEl.textContent = "Generating natural speech…";
+      animateWave(true);
+      speakBtn.disabled = true;
+      try {
+        const res = await fetch(`${API_BASE}/api/speak`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, voiceId }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          statusEl.textContent = err.error || "Something went wrong. Try a demo alert below.";
+          animateWave(false);
+          return;
+        }
+        const blob = await res.blob();
+        playUrl(URL.createObjectURL(blob), null);
+        statusEl.textContent = "Playing your alert.";
+      } catch (e) {
+        statusEl.textContent = "Network error. Try a demo alert below.";
+        animateWave(false);
+      } finally {
+        speakBtn.disabled = false;
+      }
+    });
+
+    // ---------- Demo language cards ----------
+    async function loadDemo() {
+      const grid = document.getElementById("langGrid");
+      let manifest;
+      try {
+        manifest = await (await fetch("audio/demo/manifest.json")).json();
+      } catch { return; }
+      grid.innerHTML = "";
+      window.__demoClips = manifest.clips;
+      manifest.clips.forEach((clip, i) => {
+        const card = document.createElement("button");
+        card.className = "lang-card glass rounded-2xl p-5 text-left";
+        card.setAttribute("aria-label", `Play the ${clip.language} flood alert`);
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-3">
+            <span class="display text-xl font-semibold">${clip.native}</span>
+            <span class="w-9 h-9 rounded-full btn-accent flex items-center justify-center text-sm" aria-hidden="true">▶</span>
+          </div>
+          <div class="text-xs uppercase tracking-widest text-[var(--muted)] mb-2">${clip.language}</div>
+          <p class="text-sm text-[var(--muted)] leading-relaxed line-clamp-3">${clip.text}</p>
+        `;
+        card.addEventListener("click", () => playUrl(clip.file, card));
+        grid.appendChild(card);
+        gsap.from(card, { y: 24, opacity: 0, duration: 0.6, delay: i * 0.06, ease: "power3.out" });
+      });
+    }
+    loadDemo();
+
+    // ---------- Entrance ----------
+    gsap.from(".hero-line", { y: 40, opacity: 0, duration: 1, ease: "power3.out" });
+    gsap.from(".hero-sub", { y: 24, opacity: 0, duration: 0.8, delay: 0.25, ease: "power3.out" });
+    gsap.from(".composer", { y: 30, opacity: 0, duration: 0.8, delay: 0.4, ease: "power3.out" });
+  </script>
+</body>
+</html>
