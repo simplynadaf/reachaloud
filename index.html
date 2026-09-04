@@ -11,13 +11,18 @@
   <meta property="og:title" content="ReachAloud - Emergency alerts, spoken in every language" />
   <meta property="og:description" content="Turn a written emergency alert into natural spoken voice in any language, for people who can't read the screen. Built with ElevenLabs." />
   <meta property="og:url" content="https://simplynadaf.github.io/reachaloud/" />
+  <meta property="og:image" content="https://simplynadaf.github.io/reachaloud/og.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ReachAloud - emergency alerts, spoken in every language" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="ReachAloud - Emergency alerts, spoken in every language" />
   <meta name="twitter:description" content="Turn a written emergency alert into natural spoken voice in any language, for people who can't read the screen. Built with ElevenLabs." />
-  <meta name="theme-color" content="#0a0b0f" />
+  <meta name="twitter:image" content="https://simplynadaf.github.io/reachaloud/og.jpg" />
+  <meta name="theme-color" content="#080a12" />
 
   <!-- Favicon: coral speaker on dark, matches the nav logo -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a0b0f'/%3E%3Ctext x='50' y='68' font-size='54' text-anchor='middle'%3E%F0%9F%94%8A%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23080a12'/%3E%3Ctext x='50' y='68' font-size='54' text-anchor='middle'%3E%F0%9F%94%8A%3C/text%3E%3C/svg%3E" />
 
   <script src="config.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -27,12 +32,15 @@
   <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=cabinet-grotesk@400,500,700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0a0b0f;
-      --accent: #ff7a45;      /* warm coral - "alert = help" */
-      --accent-2: #ffb545;    /* amber */
-      --ink: #f4f1ea;
-      --muted: rgba(244,241,234,0.60);
-      --line: rgba(255,255,255,0.08);
+      --bg: #080a12;          /* deep blue-charcoal base (cooler than pure black) */
+      --bg-2: #0c1020;        /* raised surface tint */
+      --accent: #ff6b4a;      /* electric coral - the human "help" signal */
+      --accent-2: #ffab3d;    /* amber, warm mid-stop */
+      --signal: #38e0ff;      /* electric cyan - the cool complementary "signal" pop */
+      --signal-2: #6ad8ff;    /* softer cyan */
+      --ink: #f6f4ef;
+      --muted: rgba(226,232,246,0.62);  /* cool-tinted secondary text */
+      --line: rgba(150,180,255,0.10);   /* faint cool border */
     }
     * { box-sizing: border-box; }
     body {
@@ -44,59 +52,64 @@
     }
     .display { font-family: 'Clash Display', sans-serif; letter-spacing: -0.02em; word-spacing: 0.12em; }
 
-    /* Ambient beacon glow - the "signal in the dark" */
+    /* Ambient beacon glow - gradient-as-light: warm coral rising from the
+       bottom-left, a cool cyan signal from the top-right. The two hues sit
+       across the wheel so the field reads electric, not muddy. */
     .beacon {
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(60% 50% at 15% 85%, rgba(255,122,69,0.22), transparent 70%),
-        radial-gradient(45% 40% at 85% 20%, rgba(255,181,69,0.10), transparent 70%);
-      filter: saturate(115%);
+        radial-gradient(55% 45% at 12% 88%, rgba(255,107,74,0.28), transparent 68%),
+        radial-gradient(50% 45% at 88% 14%, rgba(56,224,255,0.20), transparent 70%),
+        radial-gradient(90% 90% at 50% 50%, rgba(12,16,32,0.0), rgba(6,8,16,0.55) 100%);
+      filter: saturate(125%);
     }
-    /* Concentric signal ripples, very faint */
-    .ripples { position: fixed; left: 15%; top: 85%; z-index: 0; pointer-events: none; opacity: 0.5; }
+    /* Concentric signal ripples - cyan, the "broadcast" reading. */
+    .ripples { position: fixed; left: 12%; top: 88%; z-index: 0; pointer-events: none; opacity: 0.55; }
     .ripple {
-      position: absolute; border: 1px solid rgba(255,122,69,0.25); border-radius: 50%;
+      position: absolute; border: 1px solid rgba(56,224,255,0.28); border-radius: 50%;
       transform: translate(-50%, -50%); animation: ripple 6s ease-out infinite;
     }
     @keyframes ripple {
-      0% { width: 0; height: 0; opacity: 0.6; }
+      0% { width: 0; height: 0; opacity: 0.55; }
       100% { width: 1200px; height: 1200px; opacity: 0; }
     }
     /* Film grain */
     body::after {
-      content: ''; position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.035;
+      content: ''; position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.04;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
     .glass {
-      background: rgba(255,255,255,0.035);
-      backdrop-filter: blur(16px) saturate(140%);
-      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      background: linear-gradient(180deg, rgba(150,180,255,0.055), rgba(150,180,255,0.02));
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
       border: 1px solid var(--line);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+      box-shadow: 0 14px 44px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
     }
     .btn-accent {
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       color: #1a0d05; font-weight: 700;
       transition: transform .4s cubic-bezier(0.32,0.72,0,1), box-shadow .4s;
-      box-shadow: 0 8px 30px rgba(255,122,69,0.35);
+      box-shadow: 0 8px 30px rgba(255,107,74,0.38);
     }
-    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(255,122,69,0.5); }
+    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 16px 46px rgba(255,107,74,0.55); }
     .btn-accent:active { transform: scale(0.98); }
     textarea { field-sizing: content; }
+    /* Waveform: coral base rising into a cyan tip - the warm voice carried on
+       the cool signal. */
     .wave-bar {
       width: 3px; height: 56px; border-radius: 3px;
       transform: scaleY(0.07); transform-origin: bottom;
-      background: linear-gradient(to top, var(--accent), var(--accent-2));
+      background: linear-gradient(to top, var(--accent) 0%, var(--accent-2) 45%, var(--signal) 100%);
       transition: transform .12s ease;
     }
-    .lang-card { transition: transform .4s cubic-bezier(0.32,0.72,0,1), border-color .3s; }
-    .lang-card:hover { transform: translateY(-3px); border-color: rgba(255,122,69,0.4); }
-    .lang-card.playing { border-color: rgba(255,122,69,0.7); box-shadow: 0 0 0 1px rgba(255,122,69,0.4), 0 16px 50px rgba(255,122,69,0.18); }
-    ::selection { background: rgba(255,122,69,0.3); }
+    .lang-card { transition: transform .4s cubic-bezier(0.32,0.72,0,1), border-color .3s, box-shadow .3s; }
+    .lang-card:hover { transform: translateY(-3px); border-color: rgba(56,224,255,0.45); }
+    .lang-card.playing { border-color: rgba(56,224,255,0.75); box-shadow: 0 0 0 1px rgba(56,224,255,0.45), 0 18px 54px rgba(56,224,255,0.20); }
+    ::selection { background: rgba(56,224,255,0.32); color: #fff; }
 
-    /* Visible, on-brand keyboard focus (themed from the coral palette). */
+    /* Visible, on-brand keyboard focus (the cool signal color reads best on dark). */
     a:focus-visible, button:focus-visible, textarea:focus-visible, select:focus-visible {
-      outline: 2px solid var(--accent);
+      outline: 2px solid var(--signal);
       outline-offset: 3px;
       border-radius: 8px;
     }
@@ -144,7 +157,7 @@
         The alert that could save them is in a language they can't read.
       </h1>
       <p class="hero-sub mt-6 text-lg md:text-xl text-[var(--muted)] max-w-2xl leading-relaxed">
-        ReachAloud turns a written emergency alert into clear, natural <span class="text-[var(--ink)]">spoken voice</span> in any language - for the people that text leaves behind: low-literacy, low-vision, and non-native readers.
+        ReachAloud turns a written emergency alert into clear, natural <span style="color:var(--signal)">spoken voice</span> in any language - for the people that text leaves behind: low-literacy, low-vision, and non-native readers.
       </p>
     </header>
 
@@ -160,9 +173,9 @@
           <div class="flex items-center gap-3">
             <span class="text-sm text-[var(--muted)]">Voice</span>
             <select id="voiceSelect" aria-label="Choose a voice" class="glass rounded-lg px-3 py-2 text-sm bg-transparent outline-none cursor-pointer">
-              <option value="EXAVITQu4vr4xnSDxMaL" style="background:#14151a">Sarah - reassuring</option>
-              <option value="onwK4e9ZLuTAKqWW03F9" style="background:#14151a">Daniel - steady broadcaster</option>
-              <option value="nPczCjzI2devNBz1zQrb" style="background:#14151a">Brian - deep, comforting</option>
+              <option value="EXAVITQu4vr4xnSDxMaL" style="background:#0c1020">Sarah - reassuring</option>
+              <option value="onwK4e9ZLuTAKqWW03F9" style="background:#0c1020">Daniel - steady broadcaster</option>
+              <option value="nPczCjzI2devNBz1zQrb" style="background:#0c1020">Brian - deep, comforting</option>
             </select>
           </div>
           <button id="speakBtn" class="btn-accent rounded-full px-7 py-3 flex items-center gap-3">

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=cabinet-grotesk@400,500,700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080a12;
+    --accent: #ff6b4a;
+    --accent-2: #ffab3d;
+    --signal: #38e0ff;
+    --ink: #f6f4ef;
+    --muted: rgba(226,232,246,0.66);
+  }
+  html, body { width: 1200px; height: 630px; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Cabinet Grotesk', system-ui, sans-serif;
+    position: relative; overflow: hidden;
+  }
+  /* Gradient-as-light: warm coral bottom-left, cool cyan top-right */
+  .beacon {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(55% 60% at 8% 92%, rgba(255,107,74,0.32), transparent 66%),
+      radial-gradient(55% 60% at 92% 6%, rgba(56,224,255,0.24), transparent 68%),
+      radial-gradient(90% 90% at 50% 50%, rgba(12,16,32,0), rgba(6,8,16,0.6) 100%);
+    filter: saturate(125%);
+  }
+  /* Concentric signal ripples, bottom-left */
+  .ripple {
+    position: absolute; left: 8%; top: 92%;
+    border: 1px solid rgba(56,224,255,0.22); border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .grain {
+    position: absolute; inset: 0; opacity: 0.05; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap { position: relative; z-index: 2; height: 100%; padding: 72px 80px; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 18px; }
+  .logo {
+    width: 72px; height: 72px; border-radius: 20px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center; font-size: 40px;
+    box-shadow: 0 10px 34px rgba(255,107,74,0.42);
+  }
+  .brand-name { font-family: 'Clash Display', sans-serif; font-size: 40px; font-weight: 600; letter-spacing: -0.02em; }
+  .headline {
+    font-family: 'Clash Display', sans-serif; font-weight: 700;
+    font-size: 82px; line-height: 1.02; letter-spacing: -0.02em; word-spacing: 0.1em;
+    margin-top: auto; max-width: 15ch;
+  }
+  .headline .cy { color: var(--signal); }
+  .sub { margin-top: 26px; font-size: 30px; color: var(--muted); max-width: 34ch; line-height: 1.35; }
+  .foot { margin-top: 40px; display: flex; align-items: center; gap: 14px; font-size: 22px; color: var(--muted); }
+  .pill {
+    border: 1px solid rgba(56,224,255,0.3); color: var(--signal);
+    border-radius: 999px; padding: 7px 18px; font-size: 20px; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+  <div class="beacon"></div>
+  <div class="ripple" style="width:520px;height:520px"></div>
+  <div class="ripple" style="width:820px;height:820px"></div>
+  <div class="ripple" style="width:1160px;height:1160px"></div>
+  <div class="grain"></div>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">🔊</div>
+      <div class="brand-name">ReachAloud</div>
+    </div>
+    <h1 class="headline">Emergency alerts, <span class="cy">spoken</span> in every language.</h1>
+    <p class="sub">Natural voice for the people that written alerts leave behind.</p>
+    <div class="foot">
+      <span class="pill">Voice by ElevenLabs</span>
+      <span>multilingual v2</span>
+    </div>
+  </div>
+</body>
+</html>
