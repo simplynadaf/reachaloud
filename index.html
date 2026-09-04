@@ -97,8 +97,8 @@
     /* Waveform: coral base rising into a cyan tip - the warm voice carried on
        the cool signal. */
     .wave-bar {
-      width: 3px; height: 56px; border-radius: 3px;
-      transform: scaleY(0.07); transform-origin: bottom;
+      width: 3px; height: 32px; border-radius: 3px;
+      transform: scaleY(0.1); transform-origin: bottom;
       background: linear-gradient(to top, var(--accent) 0%, var(--accent-2) 45%, var(--signal) 100%);
       transition: transform .12s ease;
     }
@@ -184,9 +184,12 @@
           </button>
         </div>
 
-        <!-- Live waveform -->
-        <div id="waveform" class="flex items-end justify-center gap-[3px] h-16 mt-6 opacity-40" aria-hidden="true"></div>
-        <div id="status" class="text-center text-sm text-[var(--muted)] mt-2 h-5" role="status" aria-live="polite"></div>
+        <!-- Status hint, and a waveform that only appears during playback so the
+             box stays compact at rest (no dead zone). -->
+        <div class="mt-5 pt-4 border-t border-[var(--line)]">
+          <div id="waveform" class="hidden items-end justify-center gap-[3px] h-8 mb-3 opacity-90" aria-hidden="true"></div>
+          <div id="status" class="text-center text-sm text-[var(--muted)] min-h-[1.25rem]" role="status" aria-live="polite">Preview plays a natural spoken alert. Pick a language below to hear it in another voice.</div>
+        </div>
       </div>
     </section>
 
@@ -214,22 +217,24 @@
     for (let i = 0; i < BARS; i++) {
       const b = document.createElement("div");
       b.className = "wave-bar";
-      b.style.transform = "scaleY(0.07)";
+      b.style.transform = "scaleY(0.1)";
       waveform.appendChild(b);
     }
     const bars = [...waveform.children];
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const BAR_MAX = 56; // must match .wave-bar height in CSS
+    const BAR_MAX = 32; // must match .wave-bar height in CSS
     let waveTimer = null;
     function animateWave(active) {
+      // Reveal the waveform only while audio plays; hide it at rest so the
+      // composer box has no empty band.
+      waveform.classList.toggle("hidden", !active);
+      waveform.classList.toggle("flex", active);
       // Users who prefer reduced motion: show a calm static level, no ticking.
       if (reduceMotion) {
-        waveform.style.opacity = active ? "1" : "0.4";
-        bars.forEach((b) => (b.style.transform = active ? "scaleY(0.4)" : "scaleY(0.07)"));
+        bars.forEach((b) => (b.style.transform = active ? "scaleY(0.4)" : "scaleY(0.1)"));
         return;
       }
       if (active) {
-        waveform.style.opacity = "1";
         clearInterval(waveTimer);
         waveTimer = setInterval(() => {
           bars.forEach((b, i) => {
@@ -240,8 +245,7 @@
         }, 90);
       } else {
         clearInterval(waveTimer);
-        waveform.style.opacity = "0.4";
-        bars.forEach((b) => (b.style.transform = "scaleY(0.07)"));
+        bars.forEach((b) => (b.style.transform = "scaleY(0.1)"));
       }
     }
 
