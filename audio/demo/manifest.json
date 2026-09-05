@@ -13,12 +13,20 @@
       "chars": 137
     },
     {
-      "code": "es",
-      "language": "Spanish",
-      "native": "Espanol",
-      "text": "Alerta de inundacion. El agua sube rapidamente en su zona. Vaya a un lugar alto ahora. Lleve a su familia y deje atras los objetos pesados.",
-      "file": "audio/demo/alert_es.mp3",
-      "chars": 139
+      "code": "ne",
+      "language": "Nepali",
+      "native": "नेपाली",
+      "text": "बाढीको चेतावनी। तपाईंको क्षेत्रमा पानी छिटो बढ्दै छ। अहिले नै अग्लो ठाउँमा जानुहोस्। परिवारलाई सँगै लैजानुहोस् र भारी सामान छोडिदिनुहोस्।",
+      "file": "audio/demo/alert_ne.mp3",
+      "chars": 137
+    },
+    {
+      "code": "mr",
+      "language": "Marathi",
+      "native": "मराठी",
+      "text": "पुराचा इशारा. तुमच्या भागात पाणी वेगाने वाढत आहे. आत्ताच उंच ठिकाणी जा. कुटुंबाला सोबत घ्या आणि जड सामान मागे सोडा.",
+      "file": "audio/demo/alert_mr.mp3",
+      "chars": 115
     },
     {
       "code": "hi",
@@ -35,14 +43,6 @@
       "text": "تحذير من الفيضان. المياه ترتفع بسرعة في منطقتك. اتجه إلى مكان مرتفع الآن. خذ عائلتك معك واترك الأمتعة الثقيلة.",
       "file": "audio/demo/alert_ar.mp3",
       "chars": 110
-    },
-    {
-      "code": "fr",
-      "language": "French",
-      "native": "Francais",
-      "text": "Alerte inondation. L'eau monte rapidement dans votre region. Rejoignez un point eleve maintenant. Emmenez votre famille et laissez les objets lourds.",
-      "file": "audio/demo/alert_fr.mp3",
-      "chars": 149
     },
     {
       "code": "zh",
