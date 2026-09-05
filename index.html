@@ -299,7 +299,7 @@
         </button>
       </div>
 
-      <div id="langGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      <div id="langGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start"></div>
     </section>
 
     <!-- Dedication: a real event that shows why silent, text-only alerts fail.
@@ -363,8 +363,8 @@
   <!-- ===== "Hear it now" modal: bring-your-own-key live TTS ===== -->
   <div id="keyModal" class="fixed inset-0 z-[200] hidden items-start sm:items-center justify-center overflow-y-auto p-4 sm:p-5" role="dialog" aria-modal="true" aria-labelledby="keyModalTitle">
     <div id="keyModalBackdrop" class="fixed inset-0 bg-black/70" style="backdrop-filter:blur(6px)"></div>
-    <div class="key-panel glass relative w-full max-w-md rounded-3xl p-2 my-auto max-h-[92dvh] flex flex-col">
-      <div class="rounded-[calc(1.5rem-0.5rem)] bg-[rgba(10,11,15,0.75)] p-6 md:p-7 overflow-y-auto">
+    <div class="key-panel glass relative w-full max-w-md rounded-3xl p-2 my-auto">
+      <div class="rounded-[calc(1.5rem-0.5rem)] bg-[rgba(10,11,15,0.75)] p-6 md:p-7">
         <div class="flex items-start justify-between gap-4">
           <div>
             <h3 id="keyModalTitle" class="display text-2xl font-semibold">Hear your own alert</h3>
@@ -579,15 +579,15 @@
       window.__demoClips = manifest.clips;
       manifest.clips.forEach((clip, i) => {
         const card = document.createElement("div");
-        card.className = "lang-card glass rounded-2xl p-5 h-full flex flex-col";
+        card.className = "lang-card glass rounded-2xl p-5 h-56 flex flex-col";
         card.innerHTML = `
           <button class="card-play w-full text-left flex-1 flex flex-col" aria-label="Play the ${clip.language} flood alert">
-            <div class="flex items-center justify-between mb-3">
-              <span class="display text-xl font-semibold">${clip.native}</span>
+            <div class="flex items-center justify-between gap-2 h-10 mb-2">
+              <span class="display text-xl font-semibold leading-tight truncate">${clip.native}</span>
               <span class="w-9 h-9 rounded-full btn-accent flex items-center justify-center text-sm shrink-0" aria-hidden="true">▶</span>
             </div>
             <div class="text-xs uppercase tracking-widest text-[var(--muted)] mb-2">${clip.language}</div>
-            <p class="text-sm text-[var(--muted)] leading-relaxed line-clamp-3">${clip.text}</p>
+            <p class="text-sm text-[var(--muted)] leading-relaxed line-clamp-3 h-[3.9rem]">${clip.text}</p>
           </button>
           <a class="card-download inline-flex items-center gap-1.5 mt-4 pt-3 border-t border-[var(--line)] text-xs text-[var(--muted)] hover:text-[var(--signal)] transition-colors"
              href="${clip.file}" download="reachaloud-alert-${clip.code}.mp3"
@@ -598,7 +598,9 @@
         `;
         card.querySelector(".card-play").addEventListener("click", () => playUrl(clip.file, card));
         grid.appendChild(card);
-        gsap.from(card, { y: 24, opacity: 0, duration: 0.6, delay: i * 0.06, ease: "power3.out" });
+        // Entrance: animate in, then CLEAR the transform so cards sit exactly on
+        // the grid (a stuck residual translateY was misaligning rows).
+        gsap.from(card, { y: 24, opacity: 0, duration: 0.6, delay: i * 0.06, ease: "power3.out", clearProps: "transform,opacity" });
       });
     }
     loadDemo();
