@@ -26,18 +26,20 @@ OUT_DIR = "audio/demo"
 
 # One flood alert, translated. Kept short and calm - clear instructions that
 # read well aloud and are cheap on the character quota.
+# Language set centers South Asia (the Nepal-Tibet flood context) plus the
+# widely-spoken languages a mixed trekking/border crowd would need.
 # lang code -> (English name, native label, text)
 DEMO = {
     "en": ("English", "English",
            "Flood warning. Water is rising fast in your area. Move to higher ground now. Take your family with you and leave heavy belongings behind."),
-    "es": ("Spanish", "Espanol",
-           "Alerta de inundacion. El agua sube rapidamente en su zona. Vaya a un lugar alto ahora. Lleve a su familia y deje atras los objetos pesados."),
+    "ne": ("Nepali", "नेपाली",
+           "बाढीको चेतावनी। तपाईंको क्षेत्रमा पानी छिटो बढ्दै छ। अहिले नै अग्लो ठाउँमा जानुहोस्। परिवारलाई सँगै लैजानुहोस् र भारी सामान छोडिदिनुहोस्।"),
+    "mr": ("Marathi", "मराठी",
+           "पुराचा इशारा. तुमच्या भागात पाणी वेगाने वाढत आहे. आत्ताच उंच ठिकाणी जा. कुटुंबाला सोबत घ्या आणि जड सामान मागे सोडा."),
     "hi": ("Hindi", "हिन्दी",
            "बाढ़ की चेतावनी। आपके क्षेत्र में पानी तेज़ी से बढ़ रहा है। अभी ऊँची जगह पर चले जाएँ। अपने परिवार को साथ लें और भारी सामान छोड़ दें।"),
     "ar": ("Arabic", "العربية",
            "تحذير من الفيضان. المياه ترتفع بسرعة في منطقتك. اتجه إلى مكان مرتفع الآن. خذ عائلتك معك واترك الأمتعة الثقيلة."),
-    "fr": ("French", "Francais",
-           "Alerte inondation. L'eau monte rapidement dans votre region. Rejoignez un point eleve maintenant. Emmenez votre famille et laissez les objets lourds."),
     "zh": ("Chinese", "中文",
            "洪水警报。您所在地区的水位正在迅速上涨。请立即前往高处。带上家人，留下沉重的物品。"),
 }
