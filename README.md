@@ -9,6 +9,7 @@ warning into clear, natural, offline-capable spoken audio in any language, for t
 that text-only alerts leave behind: low-literacy, low-vision, and non-native readers.
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-simplynadaf.github.io%2Freachaloud-38e0ff?style=for-the-badge)](https://simplynadaf.github.io/reachaloud/)
+[![Read the story](https://img.shields.io/badge/Read_the_story-Dev.to-0a0a0a?style=for-the-badge&logo=dev.to)](https://dev.to/sarvar_04/reachaloud-i-built-a-multilingual-voice-tool-that-reads-emergency-alerts-aloud-for-people-who-15ho)
 [![Built with ElevenLabs](https://img.shields.io/badge/Voice_by-ElevenLabs-ff6b4a?style=for-the-badge)](https://elevenlabs.io)
 
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
@@ -27,13 +28,13 @@ that text-only alerts leave behind: low-literacy, low-vision, and non-native rea
 <br /><br />
 
 <!-- ============================================================= -->
-<!-- YOUTUBE DEMO: replace VIDEO_ID with the real ID once uploaded.              -->
+<!-- YOUTUBE DEMO                                                                -->
 <!-- The image link makes the GitHub README show a clickable video thumbnail.    -->
 <!-- ============================================================= -->
 
 ### ▶️ Watch the 2-minute demo
 
-[![ReachAloud demo video](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
+[![ReachAloud demo video](https://img.youtube.com/vi/X0yQTw4slhE/maxresdefault.jpg)](https://youtu.be/X0yQTw4slhE)
 
 </div>
 
@@ -231,11 +232,12 @@ Accessibility is the product, not a checkbox:
 ## Credits
 
 - **Voice:** [ElevenLabs](https://elevenlabs.io) `eleven_multilingual_v2`.
-- Built for the [DEV Weekend Challenge — Generosity Edition](https://dev.to/challenges/weekend-2026-09-03).
+- Built for the [DEV Weekend Challenge - Generosity Edition](https://dev.to/challenges/weekend-2026-09-03).
+- Read the story: [ReachAloud on Dev.to](https://dev.to/sarvar_04/reachaloud-i-built-a-multilingual-voice-tool-that-reads-emergency-alerts-aloud-for-people-who-15ho).
 - Author: **Sarvar Nadaf** ([@simplynadaf](https://github.com/simplynadaf)).
 - In memory of the victims of the 2026 Nepal-Tibet floods.
 
 ## License
 
-[MIT](LICENSE) — free to use, adapt, and build on. If you extend it for a real community,
+[MIT](LICENSE) - free to use, adapt, and build on. If you extend it for a real community,
 let me know.
